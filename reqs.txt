@@ -1,4 +1,4 @@
-langchain
-"ray[air]"
-dreamai
-transformers
+dreamai==0.21.2
+langchain==0.0.225
+transformers==4.30.2
+"ray[air]"==2.5.1
