@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "langchain_ray"
+  site-url: "https://HamzaFarhan.github.io/langchain_ray"
+  description: "LangChain leveraging Ray."
+  repo-branch: main
+  repo-url: "https://github.com/HamzaFarhan/langchain_ray"
