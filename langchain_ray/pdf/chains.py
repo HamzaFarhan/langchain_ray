@@ -12,7 +12,7 @@ from .utils import *
 def pdf_docs_chain(
     chunk_size=200, chunk_overlap=20, verbose=False, input_key="pdf_folder", output_key="df"
 ):
-    "Chain for loading and splitting PDFs into Documents."
+    "Chain that takes a PDF folder and returns a DataFrame of Documents."
     pdf_chain = transform_chain(create_pdf_df, input_key=input_key)
     docs_chain = transform_chain(
         df_pdf_docs,
@@ -27,7 +27,7 @@ def pdf_docs_chain(
 
 
 def pdf_cats_chain(cats_model, input_key="df", output_key="df"):
-    "Chain for adding categories to PDF Documents."
+    "Chain that takes a DataFrame of Documents and adds categories using a SetFit model."
     return transform_chain(
         df_docs_cat,
         input_key=input_key,
@@ -37,7 +37,7 @@ def pdf_cats_chain(cats_model, input_key="df", output_key="df"):
 
 
 def pdf_ems_chain(ems_model, ems_folder, input_key="df", output_key="df"):
-    "Chain for adding embeddings to a PDF Documents DataFrame."
+    "Chain that takes a DataFrame of Documents and writes embeddings to `ems_folder` using `ems_model`."
     transform_chain(
         df_docs_ems,
         input_key=input_key,
@@ -50,7 +50,7 @@ def pdf_ems_chain(ems_model, ems_folder, input_key="df", output_key="df"):
 
 
 def pdf_faiss_chain(ems_model, index_folder, index_name, input_key="df", output_key="df"):
-    "Chain for adding PDF Documents to a FAISS index."
+    "Chain that takes a DataFrame of Documents and adds them to a FAISS index in `index_folder`."
     return transform_chain(
         df_to_faiss,
         input_key=input_key,
@@ -78,8 +78,8 @@ def pdf_index_chain(
     verbose=False,
 ):
     """
-    Chain for adding PDF documents to a FAISS index.
-    It will be divided and distributed into multiple indexes using Ray if there are more documents than `docs_block_size`.
+    Chain that takes a PDF folder and adds them to FAISS indexes in `index_folder`.
+    If there are more than `docs_block_size` Documents, it will be divided and distributed into multiple indexes using Ray.
     """
     chain1 = pdf_docs_chain(
         chunk_size=chunk_size, chunk_overlap=chunk_overlap, input_key=input_key
@@ -114,7 +114,10 @@ def index_query_chain(
     block_size=10,  # The number of indexes to process in a single Ray task.
     verbose=False,
 ):
-    "Chain for querying the FAISS indexes in `index_folder` with `index_name`."
+    """
+    Chain that takes a query and returns the top `k` results from the FAISS indexes in `index_folder`.
+    If there are more than `block_size` indexes, search will be distributed using Ray.
+    """
     q_df_chain = transform_chain(
         create_idx_q_df,
         input_key=input_key,
