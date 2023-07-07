@@ -4,3 +4,4 @@ langchain
 transformers
 pypdf
 faiss-cpu
+sentence-transformers
