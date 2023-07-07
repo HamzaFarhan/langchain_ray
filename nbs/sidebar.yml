@@ -1,0 +1,8 @@
+website:
+  sidebar:
+    style: floating
+    contents:
+      - index.ipynb
+      - 00_chains.ipynb
+      - section: PDF
+        contents: pdf/*

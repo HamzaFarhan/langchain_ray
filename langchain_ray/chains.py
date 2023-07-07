@@ -65,4 +65,3 @@ def ray_chain(chain, block_size=1500, cuda=True):
 
 def noop_chain():
     return transform_chain(noop)
-
