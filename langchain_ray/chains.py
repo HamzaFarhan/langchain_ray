@@ -26,20 +26,21 @@ def transform_chain(transform, transform_kwargs={}, input_key="df", output_key="
     )
 
 
-def ray_chain_fn(data, chain, block_size=1500, cuda=True, max_cpus=8):
+def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
     df = data[chain.input_keys[0]]
     if not is_df(df):
         res = chain.run(df)
     elif block_size is None or len(df) <= block_size:
         res = chain.run(df)
     else:
+        ray.init(ignore_reinit_error=True)
         num_blocks = int(np.ceil(len(df) / block_size))
         msg.info(f"Running chain on {num_blocks} blocks.", spaced=True)
-        num_cpus = min(ray.available_resources()["CPU"] - 4, max_cpus)
+        num_cpus = min(ray.available_resources()["CPU"], num_cpus)
         num_cpus /= num_blocks
-        num_gpus = None
-        if cuda:
-            num_gpus = (ray.available_resources()["GPU"] - 0.25) / num_blocks
+        if num_gpus is not None:
+            num_gpus = min(ray.available_resources()["GPU"], num_gpus)
+            num_gpus /= num_blocks
             num_cpus = None
         ds = rd.from_pandas(df).repartition(num_blocks)
         res = ds.map_batches(
@@ -52,8 +53,10 @@ def ray_chain_fn(data, chain, block_size=1500, cuda=True, max_cpus=8):
     return {chain.output_keys[0]: res}
 
 
-def ray_chain(chain, block_size=1500, cuda=True):
-    tfm = partial(ray_chain_fn, chain=chain, block_size=block_size, cuda=cuda)
+def ray_chain(chain, block_size=1500, num_cpus=8, num_gpus=1):
+    tfm = partial(
+        ray_chain_fn, chain=chain, block_size=block_size, num_cpus=num_cpus, num_gpus=num_gpus
+    )
     input_variables = chain.input_keys
     output_variables = chain.output_keys
     return TransformChain(

@@ -2,3 +2,5 @@ dreamai
 langchain
 "ray[air]"
 transformers
+pypdf
+faiss-cpu

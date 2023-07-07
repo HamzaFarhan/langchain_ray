@@ -5,6 +5,8 @@ import ray
 from ray import serve
 from ray import data as rd
 from transformers import pipeline
+from sentence_transformers import SentenceTransformer
+
 from langchain.schema import Document
 from langchain.llms import HuggingFacePipeline
 from langchain.vectorstores import Chroma, FAISS
