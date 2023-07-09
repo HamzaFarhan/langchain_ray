@@ -203,5 +203,6 @@ def df_search_faiss(df, ems_model, filter=None, k=2):
     query = df["query"]
     db = FAISS.load_local(index_folder, embeddings=ems_model, index_name=index_name)
     q_sims = db.similarity_search_with_score(query, filter=filter, k=k)
+    # print(f'\n\nQSIMS: {q_sims}\n\n')
     df["results"] = q_sims
     return df
