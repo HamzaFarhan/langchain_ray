@@ -16,28 +16,49 @@ def chainfn_input(data, tfm, tfm_kwargs={}, input_variables=["df"]):
     for pk, ik in zip(pos_args, input_variables):
         if pk != "kwargs":
             tfm_kwargs[pk] = tfm_kwargs.pop(ik)
-    if 'kwargs' not in fn_args:
-        tfm_kwargs = {k:v for k,v in tfm_kwargs.items() if k in fn_args.keys()}
+    if "kwargs" not in fn_args:
+        tfm_kwargs = {k: v for k, v in tfm_kwargs.items() if k in fn_args.keys()}
     return tfm_kwargs
+
 
 def chainfn_output(fn_res, output_variables=["df"]):
     if not list_or_tuple(fn_res):
         fn_res = [fn_res]
+    if len(fn_res) > len(output_variables):
+        fn_res = [fn_res]
     return {k: r for k, r in zip(output_variables, fn_res)}
 
-def chain_fn(data, tfm, tfm_kwargs={}, input_variables=["df"], output_variables=["df"]):
-    tfm_kwargs = chainfn_input(data, tfm, tfm_kwargs, input_variables)
-    # print(f'\n\nTFM: {tfm}\n\n')
-    # print(f'\n\nTFM KWARGS: {tfm_kwargs.keys()}\n\n')
+
+# def chain_fn(data, tfm, tfm_kwargs={}, input_variables=["df"], output_variables=["df"]):
+#     tfm_kwargs = chainfn_input(data, tfm, tfm_kwargs, input_variables)
+#     # print(f'\n\nTFM: {tfm}\n\n')
+#     # print(f'\n\nTFM KWARGS: {tfm_kwargs.keys()}\n\n')
+#     fn_res = tfm(**tfm_kwargs)
+#     return chainfn_output(fn_res, output_variables)
+
+
+def chain_fn(data, tfm, tfm_kwargs={}, data_kwargs_mapping={}, output_variables=["df"]):
+    tfm_kwargs = {**data, **tfm_kwargs}
+    for k, v in data_kwargs_mapping.items():
+        tfm_kwargs[v] = tfm_kwargs.pop(k)
+    fn_args = inspect.signature(tfm).parameters
+    if "kwargs" not in fn_args:
+        tfm_kwargs = {k: v for k, v in tfm_kwargs.items() if k in fn_args.keys()}
+    # print(f"\n\nTFM: {tfm}\n\n")
+    # print(f"\n\nTFM KWARGS: {tfm_kwargs.keys()}\n\n")
     fn_res = tfm(**tfm_kwargs)
-    return chainfn_output(fn_res, output_variables)
+    fn_res = {**data, **chainfn_output(fn_res, output_variables)}
+    # print(f"\n\nFN RES: {fn_res}\n\n")
+    return fn_res
 
 
 def transform_chain(
     transform,
     transform_kwargs={},
+    data_kwargs_mapping={},
     input_variables=["df"],
     output_variables=["df"],
+    verbose=False,
 ):
     return TransformChain(
         input_variables=input_variables,
@@ -46,26 +67,30 @@ def transform_chain(
             chain_fn,
             tfm=transform,
             tfm_kwargs=transform_kwargs,
-            input_variables=input_variables,
+            data_kwargs_mapping=data_kwargs_mapping,
             output_variables=output_variables,
         ),
+        verbose=verbose,
     )
 
 
 def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
-    ray_data = data[chain.input_keys[0]]
-    # if not is_df(df):
-    # res = chain.run(df)
-    if path_or_str(ray_data) or not is_iter(ray_data):
-        res = chain.run(ray_data)
-        # print(f'\n\nRES: {res}\n\n')
-        return {chain.output_keys[0]: res}
-    if block_size is None or len(ray_data) <= block_size:
-        res = chain.run(ray_data)
-        # print(f'\n\nRES: {res}\n\n')
-        return {chain.output_keys[0]: res}
+    if block_size is None:
+        return chain(data)
+    ray_data = {k: v for k, v in data.items()}
+    for k, v in ray_data.items():
+        if not is_list(v):
+            ray_data[k] = [v]
+    max_len = max([len(v) for v in ray_data.values()])
+    if max_len == 1 or max_len <= block_size:
+        return chain(data)
+    for k, v in ray_data.items():
+        if len(v) < max_len:
+            ray_data[k] = v * max_len
+    # print(f"\n\nDATA: {data}\n\n")
+    df = pd.DataFrame(ray_data)
     ray.init(ignore_reinit_error=True)
-    num_blocks = int(np.ceil(len(ray_data) / block_size))
+    num_blocks = int(np.ceil(len(df) / block_size))
     msg.info(f"Running chain on {num_blocks} blocks.", spaced=True)
     num_cpus = min(ray.available_resources()["CPU"], num_cpus)
     num_cpus /= num_blocks
@@ -73,21 +98,22 @@ def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
         num_gpus = min(ray.available_resources()["GPU"], num_gpus)
         num_gpus /= num_blocks
         num_cpus = None
-    if not is_df(ray_data):
-        ds = rd.from_items(ray_data).repartition(num_blocks)
-    else:
-        ds = rd.from_pandas(ray_data).repartition(num_blocks)
-    res = ds.map_batches(
-        lambda x: chain.run(x),
-        batch_size=block_size,
-        num_cpus=num_cpus,
-        num_gpus=num_gpus,
-        batch_format="pandas",
-    ).to_pandas()
-    return {chain.output_keys[0]: res}
+    ds = rd.from_pandas(df).repartition(num_blocks)
+    res = (
+        ds.map_batches(
+            lambda x: chain(x),
+            batch_size=block_size,
+            num_cpus=num_cpus,
+            num_gpus=num_gpus,
+            # batch_format="pandas",
+        )
+        .to_pandas()
+        .to_dict(orient="list")
+    )
+    return res
 
 
-def ray_chain(chain, block_size=1500, num_cpus=8, num_gpus=1):
+def ray_chain(chain, block_size=1500, num_cpus=8, num_gpus=1, verbose=False):
     tfm = partial(
         ray_chain_fn, chain=chain, block_size=block_size, num_cpus=num_cpus, num_gpus=num_gpus
     )
@@ -97,6 +123,7 @@ def ray_chain(chain, block_size=1500, num_cpus=8, num_gpus=1):
         input_variables=input_variables,
         output_variables=output_variables,
         transform=tfm,
+        verbose=verbose,
     )
 
 
