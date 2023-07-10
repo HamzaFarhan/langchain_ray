@@ -6,6 +6,7 @@ import inspect
 from ray import serve
 from ray import data as rd
 from transformers import pipeline
+from fastai.torch_core import default_device
 from sentence_transformers import SentenceTransformer
 
 from langchain.schema import Document

@@ -5,3 +5,5 @@ transformers
 pypdf
 faiss-cpu
 sentence-transformers
+accelerate
+fastai
