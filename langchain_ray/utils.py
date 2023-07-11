@@ -7,7 +7,7 @@ __all__ = ['cid_to_char', 'process_text', 'proc_doc_text', 'bold_text', 'print_d
 from dreamai.imports import *
 from .imports import *
 
-# %% ../nbs/00_utils.ipynb 3
+# %% ../nbs/00_utils.ipynb 4
 def cid_to_char(cidx: str):
     try:
         return chr(int(re.findall(r"\(cid\:(\d+)\)", cidx)[0]) + 29)
@@ -17,6 +17,18 @@ def cid_to_char(cidx: str):
 
 def process_text(text: str):
     text = text.strip()
+    text = demoji.replace(text, "")
+    text = clean(
+        text,
+        # no_urls=True,
+        no_emails=True,
+        no_phone_numbers=True,
+        no_currency_symbols=True,
+        # replace_with_url="",
+        replace_with_email="",
+        replace_with_phone_number="",
+        replace_with_currency_symbol="",
+    )
     text = cid_to_char(text)
     text = re.sub("\xa0", " ", text)
     text = re.sub(r"\uf0b7", " ", text)

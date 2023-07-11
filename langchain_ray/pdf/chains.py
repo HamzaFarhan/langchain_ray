@@ -9,7 +9,7 @@ from ..chains import *
 from ..utils import *
 from .utils import *
 
-# %% ../../nbs/pdf/01_pdf_chains.ipynb 3
+# %% ../../nbs/pdf/01_pdf_chains.ipynb 4
 def pdfs_to_docs_chain(
     splitter=None,
     chunk_size=200,
@@ -21,6 +21,8 @@ def pdfs_to_docs_chain(
     output_variables=["docs"],
     verbose=False,
 ):
+    """Chain that returns a list of `Documents` extracted from a PDF path.
+    The path can be a single PDF path or a list of paths or a directory path."""
     return transform_chain(
         pdf_to_docs,
         transform_kwargs=dict(

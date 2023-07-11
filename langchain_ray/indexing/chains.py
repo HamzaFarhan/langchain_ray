@@ -10,7 +10,7 @@ from ..utils import *
 from .utils import *
 from ..pdf.chains import *
 
-# %% ../../nbs/indexing/01_indexing_chains.ipynb 3
+# %% ../../nbs/indexing/01_indexing_chains.ipynb 4
 def docs_to_faiss_chain(
     ems_model,
     index_folder,
@@ -19,7 +19,7 @@ def docs_to_faiss_chain(
     output_variables=["docs"],
     verbose=False,
 ):
-    "Chain that takes a DataFrame of Documents and adds them to a FAISS index in `index_folder`."
+    "Chain that takes a list of `Documents` and adds them to a `FAISS` index in `index_folder`."
     return transform_chain(
         docs_to_faiss,
         input_variables=input_variables,
@@ -38,8 +38,8 @@ def pdfs_to_faiss_chain(
     ems_model,  # The model to use for vectorestore embeddings.
     index_folder,  # The folder to store the FAISS index.
     index_name,  # The name of the FAISS index.
-    input_variables=["pdf_folder"],  # The input key for the PDF folder.
-    output_variables=["docs"],  # The output key for the final DataFrame.
+    input_variables=["pdf_path"],
+    output_variables=["docs"],
     chunk_size=200,  # The number of characters per Document.
     chunk_overlap=20,  # The number of characters to overlap between Documents.
     docs_block_size=1500,  # The number of Documents to process in a single Ray task.
@@ -48,7 +48,8 @@ def pdfs_to_faiss_chain(
     verbose=False,
 ):
     """
-    Chain that takes a `pdf_folder` and adds them to FAISS indexes in `index_folder`.
+    Chain that adds PDFs to `FAISS` indexes in `index_folder`.
+    If there are more than `docs_block_size` extracted `Documents`, indexing will be distributed using `Ray`.
     """
     docs_chain = pdfs_to_docs_chain(
         chunk_size=chunk_size,
@@ -85,15 +86,15 @@ def index_query_chain(
     index_folder,  # The folder with the FAISS indexes.
     index_name,  # The name of the FAISS index.
     input_variables=["query", "k"],
-    output_variables=["search_results"],  # The output key for the search results.
+    output_variables=["search_results"],
     block_size=10,  # The number of indexes to process in a single Ray task.
     num_cpus=12,  # The number of CPUs to use for Ray.
     num_gpus=1,  # The number of GPUs to use for Ray.
     verbose=False,
 ):
     """
-    Chain that takes a query and returns the top `k` results from the FAISS indexes in `index_folder`.
-    If there are more than `block_size` indexes, search will be distributed using Ray.
+    Chain that takes a `query` and returns the top `k` results from the `FAISS` indexes in `index_folder`.
+    If there are more than `block_size` indexes, search will be distributed using `Ray`.
     """
 
     index_names_chain = transform_chain(

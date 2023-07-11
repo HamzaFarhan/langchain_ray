@@ -9,7 +9,7 @@ from ..imports import *
 from ..utils import *
 from ..chains import *
 
-# %% ../../nbs/pdf/00_pdf_utils.ipynb 5
+# %% ../../nbs/pdf/00_pdf_utils.ipynb 4
 def pdf_files(pdf_folder):
     return get_files(pdf_folder, extensions=[".pdf"])
 
