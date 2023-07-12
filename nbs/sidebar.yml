@@ -4,5 +4,13 @@ website:
     contents:
       - index.ipynb
       - 00_chains.ipynb
+      - section: API
+        contents: api/*
+      - section: Driver
+        contents: driver/*
       - section: PDF
         contents: pdf/*
+      - section: NER
+        contents: ner/*
+      - section: Indexing
+        contents: indexing/*
