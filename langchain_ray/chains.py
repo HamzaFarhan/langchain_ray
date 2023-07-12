@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['chainfn_input', 'chainfn_output', 'chain_fn_args', 'chain_fn', 'transform_chain', 'ray_chain_fn', 'ray_chain',
-           'noop_chain']
+           'noop_chain', 'docs_to_json_chain', 'add_str_to_docs_chain']
 
 # %% ../nbs/01_chains.ipynb 2
 from dreamai.imports import *
@@ -94,9 +94,8 @@ def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
     It splits the input data into blocks, and runs the chain function on each block in parallel.
     The results are then combined and returned.
     """
-    
+
     try:
-    
         # If the block size is None, run the chain function on the entire dataset.
         if block_size is None:
             return chain(data)
@@ -133,10 +132,12 @@ def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
         num_cpus = min(ray.available_resources()["CPU"], num_cpus)
         num_cpus /= num_blocks
         if num_gpus is not None:
-            num_gpus = min(ray.available_resources()["GPU"], num_gpus)
-            num_gpus /= num_blocks
-            num_cpus = None
-
+            num_gpus = min(ray.available_resources().get("GPU", 0), num_gpus)
+            if num_gpus > 0:
+                num_gpus /= num_blocks
+                num_cpus = None
+            else:
+                num_gpus = None
         # Convert the Pandas DataFrame into a Ray dataset and run the chain function on each block.
         ds = rd.from_pandas(df).repartition(num_blocks)
         res = (
@@ -161,7 +162,11 @@ def ray_chain(chain, block_size=1500, num_cpus=8, num_gpus=1, verbose=False):
     This function is used to run a given chain function on a Ray cluster if necessary.
     """
     tfm = partial(
-        ray_chain_fn, chain=chain, block_size=block_size, num_cpus=num_cpus, num_gpus=num_gpus
+        ray_chain_fn,
+        chain=chain,
+        block_size=block_size,
+        num_cpus=num_cpus,
+        num_gpus=num_gpus,
     )
     input_variables = chain.input_keys
     output_variables = chain.output_keys
@@ -175,3 +180,47 @@ def ray_chain(chain, block_size=1500, num_cpus=8, num_gpus=1, verbose=False):
 
 def noop_chain():
     return transform_chain(noop)
+
+
+def docs_to_json_chain(
+    json_folder,
+    data={},
+    data_key="data",
+    with_metadata=True,
+    with_content=True,
+    indent=None,
+    input_variables=["docs"],
+    output_variables=["docs"],
+    verbose=False,
+):
+    return transform_chain(
+        docs_to_json,
+        transform_kwargs=dict(
+            json_folder=json_folder,
+            data=data,
+            data_key=data_key,
+            with_metadata=with_metadata,
+            with_content=with_content,
+            indent=indent,
+        ),
+        vars_kwargs_mapping={input_variables[0]: "docs"},
+        input_variables=input_variables,
+        output_variables=output_variables,
+        verbose=verbose,
+    )
+    
+def add_str_to_docs_chain(
+    str,
+    input_variables=["docs"],
+    output_variables=["cat_docs"],
+    verbose=False,
+):
+    "Chain that adds a string to the docs"
+    return transform_chain(
+        add_str_to_docs,
+        transform_kwargs=dict(str=str),
+        input_variables=input_variables,
+        output_variables=output_variables,
+        vars_kwargs_mapping={input_variables[0]: "docs"},
+        verbose=verbose,
+    )
