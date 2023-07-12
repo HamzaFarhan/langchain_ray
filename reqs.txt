@@ -12,3 +12,4 @@ clean-text
 Unidecode
 tabulate
 redis
+setfit
