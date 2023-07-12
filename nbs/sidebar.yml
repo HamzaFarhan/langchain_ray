@@ -3,7 +3,8 @@ website:
     style: floating
     contents:
       - index.ipynb
-      - 00_chains.ipynb
+      - 00_utils.ipynb
+      - 01_chains.ipynb
       - section: API
         contents: api/*
       - section: Driver
