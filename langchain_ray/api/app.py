@@ -50,7 +50,7 @@ app = FastAPI()
 
 @serve.deployment(
     num_replicas=1,
-    ray_actor_options=dict(num_cpus=1, num_gpus=0.1),
+    ray_actor_options=dict(num_cpus=3, num_gpus=0.2),
     health_check_period_s=10,
     health_check_timeout_s=30,
 )
@@ -68,6 +68,7 @@ class TNetIngress(Ingress):
         redis_port=6379,
         verbose=True,
     ):
+        msg.info(f"TNetIngress RAY RESOURCES: {ray.available_resources()}", spaced=True)
         self.ray_chain_args = dict(
             block_size=block_size, num_cpus=num_cpus, num_gpus=num_gpus, verbose=verbose
         )
@@ -75,8 +76,8 @@ class TNetIngress(Ingress):
         device = default_device()
         self.ems_model = SentenceTransformer(model_name, device=device)
         self.cats_model = SetFitModel.from_pretrained("HamzaFarhan/PDFSegs").to(device)
-        self.e_ner = load_edu_model(device=device),
-        self.j_ner = load_job_model(device=device),
+        self.e_ner = (load_edu_model(device=device),)
+        self.j_ner = (load_job_model(device=device),)
         super().__init__(
             max_queue_size=max_queue_size,
             num_task_consumers=num_task_consumers,
@@ -85,9 +86,10 @@ class TNetIngress(Ingress):
         )
 
     def res_chain(self, resumes_data: ResumesData):
+        msg.info(f"res_chain RAY RESOURCES: {ray.available_resources()}", spaced=True)
         chains = []
         output_vars = []
-        
+
         docs_chain = pdf_to_docs_chain(
             input_variables=["data_path"], output_variables=["docs"], verbose=self.verbose
         )
@@ -120,7 +122,7 @@ class TNetIngress(Ingress):
             ner_chain = ray_chain(ner_chain, **self.ray_chain_args)
             chains.append(ner_chain)
             output_vars.append(["ner_docs"])
-        
+
         json_chain = docs_to_json_chain(
             json_folder=resumes_data.cats_folder,
             input_variables=output_vars[-1],

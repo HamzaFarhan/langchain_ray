@@ -1,5 +1,6 @@
 from langchain_ray.imports import *
 from langchain_ray.utils import *
+from langchain_ray.remote_utils import *
 from ray.util.queue import Queue, Empty
 from langchain_ray.driver import redis_kv_store
 
@@ -17,6 +18,7 @@ def get_task_from_kv_store(task_id, kv_store):
 
 @ray.remote
 def queue_consumer(id_, queue, redis_host="127.0.0.1", redis_port=6379) -> None:
+    msg.info(f"queue_consumer RAY RESOURCES: {ray.available_resources()}", spaced=True)
     try:
         kv_store = redis_kv_store.KeyValueStore(redis_host=redis_host, redis_port=redis_port)
         while True:
@@ -65,6 +67,7 @@ class Ingress:
         redis_host="127.0.0.1",
         redis_port=6379,
     ):
+        msg.info(f"Ingress RAY RESOURCES: {ray.available_resources()}", spaced=True)
         try:
             self.kv_store = redis_kv_store.KeyValueStore(
                 redis_host=redis_host, redis_port=redis_port
@@ -82,6 +85,9 @@ class Ingress:
                         redis_port=redis_port,
                     )
                 )
+            msg.info(
+                f"Ingress RAY RESOURCES AFTER QUEUE: {ray.available_resources()}", spaced=True
+            )
         except Exception as e:
             msg.fail(f"Ingress init failed with error: {e}", spaced=True)
 
