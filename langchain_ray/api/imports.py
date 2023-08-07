@@ -1,5 +1,4 @@
 from ray import serve
-from fastapi import FastAPI
 from dreamai.imports import *
 from langchain_ray.utils import *
 from langchain_ray.chains import *
@@ -10,3 +9,4 @@ from langchain_ray.pdf.chains import *
 from langchain_ray.ner.chains import *
 from langchain_ray.indexing.chains import *
 from fastapi.responses import JSONResponse
+from fastapi import FastAPI, BackgroundTasks

@@ -49,8 +49,10 @@ app = FastAPI()
 
 
 @serve.deployment(
-    num_replicas=1,
-    ray_actor_options=dict(num_cpus=3, num_gpus=0.2),
+    autoscaling_config=dict(
+        min_replicas=1, max_replicas=1, target_num_ongoing_requests_per_replica=1
+    ),
+    ray_actor_options=dict(num_cpus=2, num_gpus=0.2),
     health_check_period_s=10,
     health_check_timeout_s=30,
 )
@@ -62,8 +64,6 @@ class TNetIngress(Ingress):
         block_size=50,
         num_cpus=4,
         num_gpus=0.2,
-        max_queue_size=10,
-        num_task_consumers=1,
         redis_host="127.0.0.1",
         redis_port=6379,
         verbose=True,
@@ -79,8 +79,6 @@ class TNetIngress(Ingress):
         self.e_ner = (load_edu_model(device=device),)
         self.j_ner = (load_job_model(device=device),)
         super().__init__(
-            max_queue_size=max_queue_size,
-            num_task_consumers=num_task_consumers,
             redis_host=redis_host,
             redis_port=redis_port,
         )
@@ -180,21 +178,21 @@ class TNetIngress(Ingress):
         )
 
     @app.post("/batchembedding/resumes")
-    async def resumes(self, resumes_data: ResumesData):
+    async def resumes(self, resumes_data: ResumesData, background_tasks: BackgroundTasks):
         try:
             chain = self.res_chain(resumes_data)
         except Exception as e:
             msg.fail("Failed to create Resumes Chain.", spaced=True)
             raise Exception(e)
         msg.info("********* CALLING ACTION *********", spaced=True)
-        data_dict = dict(chain=chain, chain_data=resumes_data)
-        res = await self.action(data=data_dict)
+        data_dict = dict(chain=chain, chain_data=resumes_data.dict())
+        res = self.bulk_action(data=data_dict, background_tasks=background_tasks)
         # torch.cuda.empty_cache()
         msg.good(f"RETURNING RESULTS = {res}", spaced=True)
         return JSONResponse(content=res)
 
     @app.post("/batchembedding/resume")
-    async def resumes(self, resumes_data: ResumesData):
+    async def resume(self, resumes_data: ResumeData):
         t1 = time()
         try:
             chain = self.res_chain(resumes_data)

@@ -35,6 +35,8 @@ def chainfn_input(data, tfm, tfm_kwargs={}, input_variables=["df"]):
 
 
 def chainfn_output(fn_res, output_variables=["df"]):
+    if is_nested_list(fn_res) and len(fn_res) == len(output_variables):
+        fn_res = [fn_res]
     if not list_or_tuple(fn_res):
         fn_res = [fn_res]
     if len(fn_res) > len(output_variables):
@@ -57,11 +59,11 @@ def chain_fn_args(data, tfm, tfm_kwargs={}, vars_kwargs_mapping={}):
 
 def chain_fn(data, tfm, tfm_kwargs={}, vars_kwargs_mapping={}, output_variables=["df"]):
     tfm_kwargs = chain_fn_args(data, tfm, tfm_kwargs, vars_kwargs_mapping)
-    # print(f"\n\nTFM: {tfm}\n\n")
-    # print(f"\n\nTFM KWARGS: {tfm_kwargs.keys()}\n\n")
     fn_res = tfm(**tfm_kwargs)
-    fn_res = {**data, **chainfn_output(fn_res, output_variables)}
+    fn_res = chainfn_output(fn_res, output_variables)
+    fn_res = {**data, **fn_res}
     # print(f"\n\nFN RES: {fn_res}\n\n")
+
     return fn_res
 
 
@@ -105,6 +107,8 @@ def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
         for k, v in ray_data.items():
             if not is_list(v):
                 ray_data[k] = [v]
+
+        # print(f"\n\nRAY CHAIN FN DATA: {data}\n\n")
 
         # Get the maximum length of any list in the data dictionary.
         max_len = max([len(v) for v in ray_data.values()])
@@ -208,7 +212,8 @@ def docs_to_json_chain(
         output_variables=output_variables,
         verbose=verbose,
     )
-    
+
+
 def add_str_to_docs_chain(
     str,
     input_variables=["docs"],
@@ -224,3 +229,4 @@ def add_str_to_docs_chain(
         vars_kwargs_mapping={input_variables[0]: "docs"},
         verbose=verbose,
     )
+

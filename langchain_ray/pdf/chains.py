@@ -9,7 +9,6 @@ from ..chains import *
 from ..utils import *
 from .utils import *
 
-
 # %% ../../nbs/pdf/01_pdf_chains.ipynb 4
 def pdf_to_docs_chain(
     splitter=None,
@@ -56,4 +55,3 @@ def add_cats_to_docs_chain(
         vars_kwargs_mapping={input_variables[0]: "docs"},
         verbose=verbose,
     )
-

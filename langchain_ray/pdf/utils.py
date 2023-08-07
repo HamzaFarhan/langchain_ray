@@ -44,7 +44,6 @@ def pdf_to_docs(
             d = pdf_docs(pdf, splitter=splitter, proc=proc)
             if len(d) > 0:
                 docs.append(d)
-            # docs.append(pdf_docs(pdf, splitter=splitter, proc=proc))
     return docs
 
 
@@ -67,6 +66,8 @@ def text_cat(
 def docs_to_cats(docs, cats_model):
     return text_cat([doc.page_content for doc in docs], cats_model)
 
+
 def add_cats_to_docs(docs, cats_model, key="category"):
     fn = partial(docs_to_cats, cats_model=cats_model)
     return add_docs_metadata(docs, fn, key)
+
