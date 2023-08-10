@@ -76,8 +76,8 @@ class TNetIngress(Ingress):
         device = default_device()
         self.ems_model = SentenceTransformer(model_name, device=device)
         self.cats_model = SetFitModel.from_pretrained("HamzaFarhan/PDFSegs").to(device)
-        self.e_ner = (load_edu_model(device=device),)
-        self.j_ner = (load_job_model(device=device),)
+        self.e_ner = load_edu_model(device=device)
+        self.j_ner = load_job_model(device=device)
         super().__init__(
             redis_host=redis_host,
             redis_port=redis_port,
@@ -186,7 +186,9 @@ class TNetIngress(Ingress):
         #     raise Exception(e)
         msg.info("********* CALLING ACTION *********", spaced=True)
         data_dict = dict(chain=chain, chain_data=resumes_data.dict())
-        res = self.bulk_action(data=data_dict, background_tasks=background_tasks, chain_creator=self.res_chain)
+        res = self.bulk_action(
+            data=data_dict, background_tasks=background_tasks, chain_creator=self.res_chain
+        )
         # torch.cuda.empty_cache()
         msg.good(f"RETURNING RESULTS = {res}", spaced=True)
         return JSONResponse(content=res)

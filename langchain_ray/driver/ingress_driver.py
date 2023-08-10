@@ -89,6 +89,7 @@ class Ingress:
             msg.info(f"Inserting task_id: {task_id}.", spaced=True)
             self.kv_store.insert(task_id, task)
             msg.info(f"Inserted task_id: {task_id}.", spaced=True)
+            del chain
         except Exception as e:
             error = f"bulk_execute failed with error: {e}"
             msg.fail(error, spaced=True)
