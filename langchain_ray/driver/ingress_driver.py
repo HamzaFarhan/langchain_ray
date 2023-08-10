@@ -103,7 +103,7 @@ class Ingress:
 
     def bulk_action(self, data, background_tasks, chain_creator):
         chain_data = data["chain_data"]
-        task_data = {"chain": data["chain"], "chain_data": chain_data}
+        task_data = {"chain_data": chain_data}
         try:
             task_id = gen_random_string(16)
             tenant_id = chain_data.get("tenant_id", "tenant_123")
