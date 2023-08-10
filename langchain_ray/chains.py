@@ -9,6 +9,7 @@ from dreamai.imports import *
 from .imports import *
 from .utils import *
 
+
 # %% ../nbs/01_chains.ipynb 4
 def chainfn_input(data, tfm, tfm_kwargs={}, input_variables=["df"]):
     try:
@@ -48,14 +49,14 @@ def chain_fn_args(data, tfm, tfm_kwargs={}, vars_kwargs_mapping={}):
     try:
         # Combine the data and tfm_kwargs dictionaries
         tfm_kwargs = {**data, **tfm_kwargs}
-        
+
         # Map variable names in tfm_kwargs to new names using vars_kwargs_mapping
         for k, v in vars_kwargs_mapping.items():
             tfm_kwargs[v] = tfm_kwargs.pop(k)
-        
+
         # Get the parameters of the tfm function
         fn_args = inspect.signature(tfm).parameters
-        
+
         # If the tfm function does not have a "kwargs" parameter, only keep the arguments that match the function parameters
         if "kwargs" not in fn_args:
             tfm_kwargs = {k: v for k, v in tfm_kwargs.items() if k in fn_args.keys()}
@@ -63,7 +64,7 @@ def chain_fn_args(data, tfm, tfm_kwargs={}, vars_kwargs_mapping={}):
         # If there is an error, print a failure message and return an empty dictionary
         msg.fail(f"Error in chain_fn_args: {e}", spaced=True)
         return {}
-    
+
     # Return the modified tfm_kwargs dictionary
     return tfm_kwargs
 
@@ -163,7 +164,7 @@ def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
             .to_pandas()
             .to_dict(orient="list")
         )
-
+        del ds
         return res
     except Exception as e:
         msg.fail(f"Error in ray_chain_fn: {e}", spaced=True)
@@ -238,4 +239,3 @@ def add_str_to_docs_chain(
         vars_kwargs_mapping={input_variables[0]: "docs"},
         verbose=verbose,
     )
-
