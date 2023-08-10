@@ -185,7 +185,7 @@ class TNetIngress(Ingress):
         #     msg.fail("Failed to create Resumes Chain.", spaced=True)
         #     raise Exception(e)
         msg.info("********* CALLING ACTION *********", spaced=True)
-        data_dict = dict(chain=chain, chain_data=resumes_data.dict())
+        data_dict = dict(chain_data=resumes_data.dict())
         res = self.bulk_action(
             data=data_dict, background_tasks=background_tasks, chain_creator=self.res_chain
         )
