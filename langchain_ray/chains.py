@@ -46,14 +46,25 @@ def chainfn_output(fn_res, output_variables=["df"]):
 
 def chain_fn_args(data, tfm, tfm_kwargs={}, vars_kwargs_mapping={}):
     try:
+        # Combine the data and tfm_kwargs dictionaries
         tfm_kwargs = {**data, **tfm_kwargs}
+        
+        # Map variable names in tfm_kwargs to new names using vars_kwargs_mapping
         for k, v in vars_kwargs_mapping.items():
             tfm_kwargs[v] = tfm_kwargs.pop(k)
+        
+        # Get the parameters of the tfm function
         fn_args = inspect.signature(tfm).parameters
+        
+        # If the tfm function does not have a "kwargs" parameter, only keep the arguments that match the function parameters
         if "kwargs" not in fn_args:
             tfm_kwargs = {k: v for k, v in tfm_kwargs.items() if k in fn_args.keys()}
     except Exception as e:
+        # If there is an error, print a failure message and return an empty dictionary
         msg.fail(f"Error in chain_fn_args: {e}", spaced=True)
+        return {}
+    
+    # Return the modified tfm_kwargs dictionary
     return tfm_kwargs
 
 
@@ -62,8 +73,6 @@ def chain_fn(data, tfm, tfm_kwargs={}, vars_kwargs_mapping={}, output_variables=
     fn_res = tfm(**tfm_kwargs)
     fn_res = chainfn_output(fn_res, output_variables)
     fn_res = {**data, **fn_res}
-    # print(f"\n\nFN RES: {fn_res}\n\n")
-
     return fn_res
 
 

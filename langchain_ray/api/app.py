@@ -83,7 +83,7 @@ class TNetIngress(Ingress):
             redis_port=redis_port,
         )
 
-    def res_chain(self, resumes_data: ResumesData):
+    def res_chain(self, resumes_data):
         msg.info(f"res_chain RAY RESOURCES: {ray.available_resources()}", spaced=True)
         chains = []
         output_vars = []
@@ -109,7 +109,7 @@ class TNetIngress(Ingress):
         cats_chain = ray_chain(cats_chain, **self.ray_chain_args)
         chains.append(cats_chain)
         output_vars.append(["cat_docs"])
-        if resumes_data.do_ner:
+        if resumes_data.get("do_ner", False):
             ner_chain = add_ners_to_docs_chain(
                 e_ner=self.e_ner,
                 j_ner=self.j_ner,
@@ -122,7 +122,7 @@ class TNetIngress(Ingress):
             output_vars.append(["ner_docs"])
 
         json_chain = docs_to_json_chain(
-            json_folder=resumes_data.cats_folder,
+            json_folder=resumes_data["cats_folder"],
             input_variables=output_vars[-1],
             output_variables=["json_docs"],
             verbose=self.verbose,
@@ -139,7 +139,7 @@ class TNetIngress(Ingress):
         chains.append(ems_chain)
         output_vars.append(["ems_docs"])
         json_chain2 = docs_to_json_chain(
-            json_folder=resumes_data.ems_folder,
+            json_folder=resumes_data["ems_folder"],
             input_variables=output_vars[-1],
             output_variables=["final_docs"],
             verbose=self.verbose,
@@ -152,7 +152,7 @@ class TNetIngress(Ingress):
             verbose=self.verbose,
         )
 
-    def jobs_chain(self, jobs_data: TNetData):
+    def jobs_chain(self, jobs_data):
         chain1 = pdf_to_docs_chain(
             input_variables=["data_path"], output_variables=["docs"], verbose=self.verbose
         )
@@ -164,7 +164,7 @@ class TNetIngress(Ingress):
         )
         chain2 = ray_chain(chain2, **self.ray_chain_args)
         chain3 = docs_to_json_chain(
-            jobs_data.ems_folder,
+            jobs_data["ems_folder"],
             with_content=False,
             input_variables=["ems_docs"],
             output_variables=["final_docs"],
@@ -179,14 +179,14 @@ class TNetIngress(Ingress):
 
     @app.post("/batchembedding/resumes")
     async def resumes(self, resumes_data: ResumesData, background_tasks: BackgroundTasks):
-        try:
-            chain = self.res_chain(resumes_data)
-        except Exception as e:
-            msg.fail("Failed to create Resumes Chain.", spaced=True)
-            raise Exception(e)
+        # try:
+        #     chain = self.res_chain(resumes_data)
+        # except Exception as e:
+        #     msg.fail("Failed to create Resumes Chain.", spaced=True)
+        #     raise Exception(e)
         msg.info("********* CALLING ACTION *********", spaced=True)
         data_dict = dict(chain=chain, chain_data=resumes_data.dict())
-        res = self.bulk_action(data=data_dict, background_tasks=background_tasks)
+        res = self.bulk_action(data=data_dict, background_tasks=background_tasks, chain_creator=self.res_chain)
         # torch.cuda.empty_cache()
         msg.good(f"RETURNING RESULTS = {res}", spaced=True)
         return JSONResponse(content=res)
@@ -195,7 +195,7 @@ class TNetIngress(Ingress):
     async def resume(self, resumes_data: ResumeData):
         t1 = time()
         try:
-            chain = self.res_chain(resumes_data)
+            chain = self.res_chain(resumes_data.dict())
         except Exception as e:
             msg.fail("Failed to create Resumes Chain.", spaced=True)
             raise Exception(e)
@@ -221,7 +221,7 @@ class TNetIngress(Ingress):
     async def jobs(self, jobs_data: TNetData):
         t1 = time()
         try:
-            chain = self.jobs_chain(jobs_data)
+            chain = self.jobs_chain(jobs_data.dict())
         except Exception as e:
             msg.fail("Failed to create Jobs Chain.", spaced=True)
             raise Exception(e)

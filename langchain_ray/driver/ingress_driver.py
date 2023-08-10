@@ -63,10 +63,15 @@ class Ingress:
         except Exception as e:
             msg.fail(f"Ingress init failed with error: {e}", spaced=True)
 
-    def bulk_execute(self, data):
+    def bulk_execute(self, data, chain_creator):
         task_id = data.get("task_id", "task_123")
-        chain = data["chain"]
+        # chain = data["chain"]
         chain_data = data["chain_data"]
+        try:
+            chain = chain_creator(chain_data)
+        except Exception as e:
+            msg.fail("Failed to create Chain.", spaced=True)
+            raise Exception(e)
         try:
             task = get_task_from_kv_store(task_id, self.kv_store)
         except Exception as e:
@@ -95,7 +100,7 @@ class Ingress:
             task["error"] = error
             self.kv_store.insert(task_id, task)
 
-    def bulk_action(self, data, background_tasks):
+    def bulk_action(self, data, background_tasks, chain_creator):
         chain_data = data["chain_data"]
         task_data = {"chain": data["chain"], "chain_data": chain_data}
         try:
@@ -104,7 +109,9 @@ class Ingress:
             self.kv_store.insert(task_id, {"status": "TASK_STATUS_CREATED"})
             task_data["task_id"] = task_id
             task_data["tenant_id"] = tenant_id
-            background_tasks.add_task(self.bulk_execute, task_data)
+            background_tasks.add_task(
+                self.bulk_execute, task_data, chain_creator=chain_creator
+            )
             # background_tasks.add_task(bulk_execute, task_data, self.kv_store)
             return {"task_id": task_id, "tenant_id": tenant_id}
         except Exception as e:
