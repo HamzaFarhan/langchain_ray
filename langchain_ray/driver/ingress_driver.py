@@ -80,7 +80,8 @@ class Ingress:
         try:
             self.kv_store.insert(task_id, task)
             try:
-                chain(chain_data, return_only_outputs=True)
+                res = chain(chain_data, return_only_outputs=True)
+                print(f"\n\nRES: {res}\n\n")
             except Exception as e:
                 msg.fail("Failed to run Chain.", spaced=True)
                 raise Exception(e)
