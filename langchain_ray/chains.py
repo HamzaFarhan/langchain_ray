@@ -164,7 +164,7 @@ def ray_chain_fn(data, chain, block_size=1500, num_cpus=8, num_gpus=1):
             .to_pandas()
             .to_dict(orient="list")
         )
-        del ds
+        # del ds
         return res
     except Exception as e:
         msg.fail(f"Error in ray_chain_fn: {e}", spaced=True)
