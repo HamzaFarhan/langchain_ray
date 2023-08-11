@@ -202,7 +202,7 @@ class TNetIngress(Ingress):
             msg.fail("Failed to create Resumes Chain.", spaced=True)
             raise Exception(e)
         try:
-            chain(dict(data_path=resumes_data.data_path))
+            chain(dict(data_path=resumes_data.data_path), return_only_outputs=True)
         except Exception as e:
             msg.fail("Failed to run Resumes Chain.", spaced=True)
             raise Exception(e)
@@ -228,7 +228,7 @@ class TNetIngress(Ingress):
             msg.fail("Failed to create Jobs Chain.", spaced=True)
             raise Exception(e)
         try:
-            chain(dict(data_path=jobs_data.data_path))
+            chain(dict(data_path=jobs_data.data_path), return_only_outputs=True)
         except Exception as e:
             msg.fail("Failed to run Jobs Chain.", spaced=True)
             raise Exception(e)

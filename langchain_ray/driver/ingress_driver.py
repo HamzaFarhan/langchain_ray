@@ -79,7 +79,11 @@ class Ingress:
         task["status"] = "TASK_STATUS_INPROGRESS"
         try:
             self.kv_store.insert(task_id, task)
-            res = chain(chain_data, return_only_outputs=True)
+            try:
+                chain(chain_data, return_only_outputs=True)
+            except Exception as e:
+                msg.fail("Failed to run Chain.", spaced=True)
+                raise Exception(e)
             try:
                 task = get_task_from_kv_store(task_id, self.kv_store)
             except Exception as e:
