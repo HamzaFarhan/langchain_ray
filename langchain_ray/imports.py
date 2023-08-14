@@ -21,7 +21,7 @@ from transformers import (
     AutoModelForTokenClassification,
     AutoModelForSequenceClassification,
 )
-
+from pydantic import BaseModel, Field
 from langchain.schema import Document
 from langchain.llms import HuggingFacePipeline
 from langchain.vectorstores import Chroma, FAISS
