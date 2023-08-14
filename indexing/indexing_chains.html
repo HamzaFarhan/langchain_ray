@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Chains-based functions for Indexing.">
+
+<title>langchain_ray - Chains</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="langchain_ray - Chains">
+<meta property="og:description" content="Chains-based functions for Indexing.">
+<meta property="og:site-name" content="langchain_ray">
+<meta name="twitter:title" content="langchain_ray - Chains">
+<meta name="twitter:description" content="Chains-based functions for Indexing.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">langchain_ray</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../indexing/indexing_utils.html">Indexing</a></li><li class="breadcrumb-item"><a href="../indexing/indexing_chains.html">Chains</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">langchain_ray</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">PDF</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pdf/pdf_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pdf/pdf_chains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">NER</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ner/ner_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ner/ner_chains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Indexing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../indexing/indexing_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../indexing/indexing_chains.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#index_query_chain" id="toc-index_query_chain" class="nav-link active" data-scroll-target="#index_query_chain">index_query_chain</a></li>
+  <li><a href="#pdf_to_faiss_chain" id="toc-pdf_to_faiss_chain" class="nav-link" data-scroll-target="#pdf_to_faiss_chain">pdf_to_faiss_chain</a></li>
+  <li><a href="#docs_to_faiss_chain" id="toc-docs_to_faiss_chain" class="nav-link" data-scroll-target="#docs_to_faiss_chain">docs_to_faiss_chain</a></li>
+  <li><a href="#add_ems_to_docs_chain" id="toc-add_ems_to_docs_chain" class="nav-link" data-scroll-target="#add_ems_to_docs_chain">add_ems_to_docs_chain</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/HamzaFarhan/langchain_ray/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Chains</h1>
+</div>
+
+<div>
+  <div class="description">
+    Chains-based functions for Indexing.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<hr>
+<p><a href="https://github.com/HamzaFarhan/langchain_ray/blob/main/langchain_ray/indexing/chains.py#L102" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="index_query_chain" class="level3">
+<h3 class="anchored" data-anchor-id="index_query_chain">index_query_chain</h3>
+<blockquote class="blockquote">
+<pre><code> index_query_chain (ems_model, index_folder, index_name,
+                    input_variables=['query', 'k'],
+                    output_variables=['search_results'], block_size=10,
+                    num_cpus=12, num_gpus=1, verbose=False)</code></pre>
+</blockquote>
+<p>Chain that takes a <code>query</code> and returns the top <code>k</code> results from the <code>FAISS</code> indexes in <code>index_folder</code>. If there are more than <code>block_size</code> indexes, search will be distributed using <code>Ray</code>.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ems_model</td>
+<td></td>
+<td></td>
+<td>The SentenceTransformer model to use for vectorestore embeddings.</td>
+</tr>
+<tr class="even">
+<td>index_folder</td>
+<td></td>
+<td></td>
+<td>The folder with the FAISS indexes.</td>
+</tr>
+<tr class="odd">
+<td>index_name</td>
+<td></td>
+<td></td>
+<td>The name of the FAISS index.</td>
+</tr>
+<tr class="even">
+<td>input_variables</td>
+<td>list</td>
+<td>[‘query’, ‘k’]</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>output_variables</td>
+<td>list</td>
+<td>[‘search_results’]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>block_size</td>
+<td>int</td>
+<td>10</td>
+<td>The number of indexes to process in a single Ray task.</td>
+</tr>
+<tr class="odd">
+<td>num_cpus</td>
+<td>int</td>
+<td>12</td>
+<td>The number of CPUs to use for Ray.</td>
+</tr>
+<tr class="even">
+<td>num_gpus</td>
+<td>int</td>
+<td>1</td>
+<td>The number of GPUs to use for Ray.</td>
+</tr>
+<tr class="odd">
+<td>verbose</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/HamzaFarhan/langchain_ray/blob/main/langchain_ray/indexing/chains.py#L55" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="pdf_to_faiss_chain" class="level3">
+<h3 class="anchored" data-anchor-id="pdf_to_faiss_chain">pdf_to_faiss_chain</h3>
+<blockquote class="blockquote">
+<pre><code> pdf_to_faiss_chain (ems_model, index_folder, index_name,
+                     input_variables=['pdf_path'],
+                     output_variables=['docs'], chunk_size=200,
+                     chunk_overlap=20, block_size=1500, num_cpus=12,
+                     num_gpus=1, verbose=False)</code></pre>
+</blockquote>
+<p>Chain that adds PDFs to <code>FAISS</code> indexes in <code>index_folder</code>. If there are more than <code>block_size</code> PDFs, indexing will be distributed using <code>Ray</code>.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ems_model</td>
+<td></td>
+<td></td>
+<td>The model to use for vectorestore embeddings.</td>
+</tr>
+<tr class="even">
+<td>index_folder</td>
+<td></td>
+<td></td>
+<td>The folder to store the FAISS index.</td>
+</tr>
+<tr class="odd">
+<td>index_name</td>
+<td></td>
+<td></td>
+<td>The name of the FAISS index.</td>
+</tr>
+<tr class="even">
+<td>input_variables</td>
+<td>list</td>
+<td>[‘pdf_path’]</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>output_variables</td>
+<td>list</td>
+<td>[‘docs’]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>chunk_size</td>
+<td>int</td>
+<td>200</td>
+<td>The number of characters per Document.</td>
+</tr>
+<tr class="odd">
+<td>chunk_overlap</td>
+<td>int</td>
+<td>20</td>
+<td>The number of characters to overlap between Documents.</td>
+</tr>
+<tr class="even">
+<td>block_size</td>
+<td>int</td>
+<td>1500</td>
+<td>The number of PDFs to process in a single Ray task.</td>
+</tr>
+<tr class="odd">
+<td>num_cpus</td>
+<td>int</td>
+<td>12</td>
+<td>The number of CPUs to use for Ray.</td>
+</tr>
+<tr class="even">
+<td>num_gpus</td>
+<td>int</td>
+<td>1</td>
+<td>The number of GPUs to use for Ray.</td>
+</tr>
+<tr class="odd">
+<td>verbose</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/HamzaFarhan/langchain_ray/blob/main/langchain_ray/indexing/chains.py#L32" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="docs_to_faiss_chain" class="level3">
+<h3 class="anchored" data-anchor-id="docs_to_faiss_chain">docs_to_faiss_chain</h3>
+<blockquote class="blockquote">
+<pre><code> docs_to_faiss_chain (ems_model, index_folder, index_name,
+                      input_variables=['docs'], output_variables=['docs'],
+                      verbose=False)</code></pre>
+</blockquote>
+<p>Chain that takes a list of <code>Documents</code> and adds them to a <code>FAISS</code> index in <code>index_folder</code>.</p>
+<hr>
+<p><a href="https://github.com/HamzaFarhan/langchain_ray/blob/main/langchain_ray/indexing/chains.py#L15" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="add_ems_to_docs_chain" class="level3">
+<h3 class="anchored" data-anchor-id="add_ems_to_docs_chain">add_ems_to_docs_chain</h3>
+<blockquote class="blockquote">
+<pre><code> add_ems_to_docs_chain (ems_model, input_variables=['docs'],
+                        output_variables=['ems_docs'], verbose=False)</code></pre>
+</blockquote>
+<p>Chain that takes a list of <code>Documents</code> and adds <code>embeddings</code> to each <code>Document</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ems_model <span class="op">=</span> SentenceTransformer(<span class="st">'HamzaFarhan/PDFSegs'</span>, device<span class="op">=</span><span class="st">'cuda:0'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>verbose <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ems_folder <span class="op">=</span> <span class="st">"/media/hamza/data2/faiss_data/saved_ems"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>chain1 <span class="op">=</span> pdf_to_docs_chain(input_variables<span class="op">=</span>[<span class="st">"pdf"</span>], output_variables<span class="op">=</span>[<span class="st">"docs"</span>], verbose<span class="op">=</span>verbose)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>chain2 <span class="op">=</span> add_ems_to_docs_chain(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    ems_model, input_variables<span class="op">=</span>[<span class="st">"docs"</span>], output_variables<span class="op">=</span>[<span class="st">"ems_docs"</span>], verbose<span class="op">=</span>verbose</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>chain3 <span class="op">=</span> docs_to_json_chain(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    ems_folder,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    with_content<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"ems_docs"</span>],</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"final_docs"</span>],</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span>verbose,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> SequentialChain(</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    chains<span class="op">=</span>[chain1, chain2, chain3],</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"pdf"</span>],</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"final_docs"</span>],</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span>verbose,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pdf <span class="op">=</span> <span class="st">"../../resumes_5/"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> chain(<span class="bu">dict</span>(pdf<span class="op">=</span>pdf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+&gt; Entering new  chain...
+
+
+&gt; Entering new  chain...
+
+&gt; Finished chain.
+
+
+&gt; Entering new  chain...
+
+&gt; Finished chain.
+
+
+&gt; Entering new  chain...
+
+&gt; Finished chain.
+
+&gt; Finished chain.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> res[<span class="st">"final_docs"</span>][<span class="dv">0</span>][<span class="dv">0</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(doc.page_content)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(doc.metadata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>kirtan shah || || toronto, on profile summary data engineer with 3+ years of experience developing etl pipelines for both structured and
+{'source': '../../resumes_5/0cf20170-8051-41ba-9060-1a82d43f4289.pdf', 'page': 0, 'start_index': 0, 'embeddings': [0.11462773382663727, -0.002190949860960245, -0.004557551816105843, -0.020429404452443123, 0.0013719613198190928, -0.05107765644788742, -0.006046806927770376, -0.010813955217599869, -0.05173639580607414, -0.032382167875766754, 0.008773038163781166, -0.041238754987716675, -0.011339863762259483, 0.04549701511859894, -0.027355432510375977, 0.014588315971195698, 0.01907215639948845, 0.028187287971377373, -0.0191810242831707, 0.013248850591480732, -0.004099718295037746, 0.01132342591881752, -0.023586222901940346, -0.0026138199027627707, -0.022449364885687828, -0.0128311887383461, -0.047567009925842285, 0.041630521416664124, 0.03388316556811333, 0.023792514577507973, -0.01731789857149124, 0.004202561918646097, -0.030093584209680557, 0.0015716723864898086, 0.0008240077295340598, -0.006291497964411974, 0.01173523347824812, -0.025678498670458794, 0.0010160296224057674, 0.014329173602163792, -0.0009122549672611058, 0.009025522507727146, -0.03432716056704521, 0.004143956582993269, 0.005292399786412716, 0.026880990713834763, 0.034621234983205795, -0.02138800546526909, 0.012581034563481808, -0.008681145496666431, -0.03763259947299957, 0.009294962510466576, -0.005477514583617449, -0.011083097197115421, -0.00673446711152792, -0.043405432254076004, -0.012852954678237438, -0.0330035574734211, 0.023007411509752274, -0.031207922846078873, 0.04197876527905464, 0.05266023799777031, -0.015276359394192696, -0.03760942444205284, 0.04193387180566788, 0.052443914115428925, 0.0009322750265710056, -0.05113587900996208, 0.013470897451043129, 0.019136693328619003, 0.06029443442821503, 0.05499156191945076, -0.014813649468123913, 0.012448892928659916, 0.030390853062272072, 0.010680089704692364, 0.03853337839245796, 0.009870984591543674, -0.03732486441731453, 0.03445380926132202, -0.048517294228076935, 0.04822172969579697, -0.0477542020380497, -0.04300931096076965, -0.005288951098918915, 0.014057895168662071, -0.014899094589054585, 0.025032024830579758, 0.00863431952893734, -0.005911558400839567, 0.04090661182999611, -0.049291763454675674, 0.017880761995911598, 0.0019974622409790754, 0.02454369142651558, 0.019745351746678352, 0.01671832986176014, 0.020951421931385994, -0.033563967794179916, -0.06324440985918045, -0.012101526372134686, 0.010903993621468544, 0.0177388284355402, 0.05315873771905899, -0.01586318388581276, 0.018662603572010994, -0.02185693010687828, -0.046628862619400024, -0.018455971032381058, 0.015808939933776855, -0.028845636174082756, -0.02159649319946766, -0.026058517396450043, 0.05374399572610855, -0.048224467784166336, -0.034049514681100845, -0.04061556234955788, 0.04694145545363426, 0.04788479208946228, 0.06111494079232216, 0.00433580856770277, 0.02695823274552822, 0.01116058137267828, -0.042062435299158096, -0.053265415132045746, 0.00783742219209671, -0.01648193784058094, 0.008982556872069836, 0.0019010568503290415, 0.02084292471408844, 0.021093357354402542, 0.06151220574975014, -0.009427434764802456, -0.071360282599926, -0.014891966246068478, 0.013852693140506744, -0.04240529239177704, 0.033457521349191666, -0.05675313249230385, 0.020260754972696304, -0.03465166687965393, 0.022485189139842987, -0.08153267949819565, -0.013778838329017162, -0.011472788639366627, 0.011815588921308517, -0.07814750075340271, -0.02456180565059185, 0.051219742745161057, -0.004428194370120764, 0.01241324469447136, 0.012704702094197273, 0.009745264425873756, 0.032048098742961884, 0.002890704432502389, -0.00345662422478199, 0.03731418028473854, 0.003993672784417868, -0.008818092755973339, 0.06287801265716553, 0.03177232667803764, 0.03629250451922417, 0.0011253644479438663, 0.06112081557512283, -0.045021023601293564, 0.000319900136673823, 0.04505036398768425, 0.01815640553832054, -0.025656268000602722, 0.03842328488826752, 0.036652542650699615, 0.004359881393611431, -0.030606668442487717, 0.06729649007320404, 0.04757595807313919, -0.04427178204059601, 0.01835554651916027, -0.013108709827065468, 0.08598358184099197, -0.017783403396606445, -0.030968908220529556, -0.10604093968868256, -0.017464734613895416, 0.01751873455941677, 0.056555602699518204, 0.0354965478181839, 0.0191610436886549, 0.015434900298714638, -0.043455228209495544, 0.059302810579538345, 0.029243210330605507, 0.02854323200881481, -0.05204692482948303, 0.028602464124560356, 0.015257528983056545, -0.050217028707265854, -0.055671487003564835, 0.017222117632627487, -0.06741666793823242, -0.02294038236141205, 0.03534406051039696, 0.04632655903697014, -0.01585121639072895, 0.03738120570778847, 0.0334845706820488, 0.006002299953252077, -0.00532488664612174, 0.04986715689301491, -0.07880827784538269, 0.00519750639796257, 0.04706113040447235, 0.032247141003608704, -0.024071067571640015, 0.029077135026454926, 0.01259074080735445, -0.0020132227800786495, -0.03288184106349945, 0.013250983320176601, -0.01082468219101429, 0.06646798551082611, -0.01892327331006527, 0.016050873324275017, 0.024000203236937523, -0.03930622711777687, -0.008991211652755737, -0.03978991135954857, -0.04057871922850609, 0.012219715863466263, -0.02980784885585308, 0.04312687739729881, -0.039769601076841354, 0.010068658739328384, 0.018331924453377724, -0.02824624627828598, -0.008921654894948006, 0.07520394772291183, 0.07363716512918472, 0.012384799309074879, 0.03822082653641701, -0.049043651670217514, -0.054408419877290726, -0.03975018486380577, -0.019995789974927902, 0.0051612574607133865, 0.00198441743850708, 0.002015051431953907, -0.04106059670448303, -0.027965491637587547, -0.03288391977548599, 0.04659569635987282, -0.01335335522890091, -0.004400790203362703, 0.0713718831539154, 0.04036814719438553, 0.02607560157775879, 0.0031175713520497084, -0.020220045000314713, 0.0431848019361496, -0.06989465653896332, 0.07452098280191422, 0.038829803466796875, -0.01956726424396038, -0.0465540885925293, 0.008022177964448929, 0.02594604529440403, -0.059614088386297226, -0.00696510961279273, -0.06159726157784462, -0.044434379786252975, -0.004113008733838797, 0.024120714515447617, -0.018979351967573166, 0.027952756732702255, 0.007145679090172052, 0.006155871320515871, -0.01658030040562153, -0.031023915857076645, 0.047709811478853226, -0.006032343953847885, 0.045101411640644073, 0.046300653368234634, -0.07899150252342224, -0.013521142303943634, 0.038315434008836746, 0.034218929708004, -0.026531463488936424, 0.066792331635952, -0.061272915452718735, -0.04112027585506439, -0.014700180850923061, -0.0395905002951622, -0.035054512321949005, 0.026715341955423355, -0.04349503293633461, -0.01189381442964077, 0.013382486067712307, 0.009472413919866085, -0.05407214164733887, -0.0046323551796376705, 0.017581403255462646, -0.0536612793803215, -0.0540531687438488, 0.09643181413412094, -0.010571102611720562, -0.01972612924873829, -0.009531152434647083, -0.0008254339918494225, 0.012971767224371433, 0.0118251983076334, 0.01404145359992981, 0.023105842992663383, 0.036660127341747284, 0.027938200160861015, 0.022188257426023483, 0.0493917241692543, 0.02168998122215271, -0.030628696084022522, -0.04478253796696663, -0.028940964490175247, 0.13217253983020782, -0.022950585931539536, 0.0419919416308403, -0.04204613342881203, -0.006541458424180746, 0.005871852394193411, 0.043152518570423126, -0.045611150562763214, -0.0002545717288739979, 0.01061911042779684, -0.05563393235206604, 0.027669457718729973, -0.04782349616289139, -0.0382658988237381, -0.037206485867500305, -0.0007529293070547283, 0.06421803683042526, 0.03159905970096588, -0.0540773868560791, -0.021022235974669456, 0.02670905739068985, -0.05955323576927185, 0.005587833002209663, -0.06932713091373444, -0.014988240785896778, -0.016560474410653114, -0.01712067425251007, 0.07070834934711456, 0.014634356833994389, -0.0774075910449028, 0.03840094432234764, 0.015603882260620594, 0.06332003325223923, -0.01472082082182169, 0.00040475421701557934, -0.009682850912213326, 0.005697930231690407, -0.04244668036699295, 0.010358543135225773, -0.0197274349629879, 0.021922806277871132, 0.0002143895108019933, -0.005370767787098885, 0.005078528542071581, 0.02303302474319935, -0.017880501225590706, 0.018817268311977386, 0.017490610480308533, 0.028378870338201523, 0.035617392510175705, 0.01218581385910511, 0.032789260149002075, 0.09103625267744064, 0.007999056950211525, -0.00692107854411006, 0.045473720878362656, 0.03560247644782066, 0.04444802179932594, 0.01133042760193348, -0.08542695641517639, 0.005091444123536348, 0.04266611114144325, -0.01938645914196968, 0.037215691059827805, -0.005766548216342926, -0.012122820131480694, 0.01071216817945242, -0.07627932727336884, -0.044370390474796295, -0.06216743588447571, 0.019181692972779274, -0.0064894044771790504, 0.050031524151563644, 0.027186231687664986, 0.04876822978258133, -0.01178363524377346, -0.044406164437532425, -0.012233549728989601, 0.007551516406238079, -0.03665595501661301, -0.008153744973242283, -0.009048438630998135, 0.023212242871522903, 0.03497551381587982, -0.01669124700129032, -0.015075817704200745, -0.0867723897099495, 0.05283740535378456, 0.045826952904462814, 0.051897551864385605, 0.03017731010913849, -0.0013182192342355847, 0.021046267822384834, 0.06079332157969475, 0.05347643420100212, 0.02019188553094864, -0.0004289325443096459, -0.011731386184692383, 0.03333017975091934, 0.030247101560235023, -0.07476268708705902, 0.053382765501737595, 0.003550243563950062, -0.011198236607015133, 0.008610185235738754, 0.06290220469236374, 0.002111191162839532, 0.049652110785245895, 0.012305174022912979, 0.03751745447516441, -0.01381058432161808, -0.08434110879898071, 0.0202206838876009, 0.04416583850979805, 0.05760865658521652, 0.014024180360138416, -0.010330593213438988, 0.026364170014858246, 0.023663198575377464, 0.07999452948570251, -0.023900261148810387, -0.011089103296399117, 0.06107190251350403, -0.0011838271748274565, 0.0029398524202406406, -0.04566952586174011, -0.026786431670188904, -0.022455552592873573, 0.046797532588243484, -0.08461235463619232, -0.009595497511327267, 0.028290407732129097, -0.009049846790730953, -0.0073713501915335655, -0.03755038231611252, -0.033938512206077576, -0.020352952182292938, -0.01759396120905876, -0.05294468626379967, 0.0034599718637764454, -0.06818703562021255, -0.04492548108100891, 0.019993014633655548, 0.016931483522057533, 0.026024628430604935, 0.034414418041706085, -0.022622836753726006, 0.04655839502811432, -0.025927720591425896, -0.01743740402162075, -0.09504499286413193, 0.0880524143576622, -0.03443082794547081, -0.024997536092996597, -0.03580914065241814, -0.013832910917699337, 0.03850019350647926, 0.00575209641829133, -0.01081653218716383, 0.012044121511280537, 0.07803571969270706, -0.0037461677566170692, -0.021570047363638878, 0.00840623490512371, -5.505791705218144e-05, -0.0005893292836844921, -0.01119505800306797, 0.0031454749405384064, 0.006185186095535755, -0.0529039204120636, -0.005105988122522831, 0.05571722611784935, -0.011411956511437893, 0.0535283163189888, 0.01379512157291174, -0.07283805310726166, 0.05528609827160835, 0.004705990664660931, -0.02363705262541771, -0.0038245180621743202, 0.028907520696520805, -0.03808346763253212, 0.010821239091455936, 0.023387927561998367, 0.016304951161146164, -0.035340819507837296, 0.02452162653207779, -0.0054121906869113445, -0.041913848370313644, 0.008818652480840683, 0.03953302651643753, -0.04439801350235939, -0.06287398189306259, -0.005710286553949118, -0.08808209747076035, 0.004967546556144953, 0.019987381994724274, 0.02196333557367325, -0.02205742709338665, 0.01814776286482811, -0.026426801458001137, 0.028444884344935417, -0.005245050881057978, -0.0016005283687263727, 0.018168194219470024, 0.018271654844284058, -0.03842605650424957, 0.01932123675942421, 0.0027429512701928616, -0.01588616706430912, 0.06143895536661148, -0.017782961949706078, -0.03834569454193115, -0.07725106924772263, 0.012470941059291363, -0.04736901447176933, -0.022004805505275726, 0.023197177797555923, 0.0018905088072642684, 0.013703699223697186, 0.039654649794101715, -0.022539647296071053, 0.058025214821100235, 0.037232499569654465, -0.054311227053403854, -0.03320244699716568, 0.06271465122699738, -0.029994962736964226, 0.034828390926122665, 0.048689719289541245, 0.036011312156915665, -0.029188739135861397, -0.02567918598651886, -0.07135120779275894, -0.025247374549508095, -0.05255468934774399, -0.00048162430175580084, -0.005287207663059235, -0.011643333360552788, 0.03421877324581146, 0.0058905682526528835, -0.06187934800982475, 0.023955784738063812, -0.012064136564731598, -0.007880052551627159, 0.0029864481184631586, 0.005087523255497217, -0.003618237329646945, -0.03545426204800606, 0.023903433233499527, -0.04389025643467903, 0.013340156525373459, 0.0032329733949154615, 0.05064027011394501, -0.014064861461520195, -0.04104657471179962, -0.018360625952482224, -0.016161099076271057, 0.02993202395737171, 0.0373460128903389, 0.03109820745885372, -0.0036830671597272158, 0.01834156922996044, -0.026963328942656517, 0.09098558127880096, 0.07273170351982117, -0.04474727809429169, 0.0034845578484237194, -0.020171301439404488, -0.034240446984767914, -0.03934657201170921, 0.04272455349564552, -0.031055789440870285, -0.008212031796574593, 0.03565856069326401, 0.05316346883773804, -0.01150574255734682, -0.038040533661842346, 0.03316039964556694, 0.0362507700920105, -0.028346320614218712, 0.056954286992549896, 0.006304606795310974, -0.01751129701733589, -0.04190656170248985, -0.03353222832083702, -0.004521694499999285, -0.05744646117091179, -0.0008051130571402609, -0.05800628662109375, 0.04013872891664505, 0.011755597777664661, 0.0003918751608580351, -0.06069372594356537, -0.011903375387191772, -0.019734838977456093, -0.04129632189869881, -0.06643857061862946, 0.008949287235736847, 0.008863799273967743, 0.005595768336206675, 0.006844236981123686, 0.0424991138279438, 0.061471160501241684, 0.04372197389602661, -0.03799036145210266, 0.0548756867647171, -0.08161451667547226, 0.07830332964658737, -0.05576863884925842, 0.0020066117867827415, -0.07869400829076767, 0.01677701063454151, 0.023629650473594666, 0.007961364462971687, 0.042480118572711945, -0.01406556274741888, -0.0397469587624073, 0.008449465036392212, 0.010718862526118755, -0.00703721446916461, 0.05558253824710846, -0.009886784479022026, -0.056305624544620514, -0.027295539155602455, -0.01185573823750019, 0.01820339262485504, 0.013020437210798264, 0.08139768242835999, 0.024146586656570435, 0.00022305696620605886, 0.009920844808220863, -0.015372972004115582, 0.0029291589744389057, 0.0058744619600474834, -0.010830441489815712, -0.01723870262503624, -0.02350558340549469, 0.045468252152204514, -0.0146223409101367, 0.022662611678242683, -0.0019198594382032752, 0.02385224960744381, 0.018405400216579437, -0.007818988524377346, -0.011078719049692154, -0.00700819306075573, -0.018555082380771637, 0.02515941672027111, 0.0007347276550717652, -0.05803984776139259, -0.055180229246616364, -0.02004365436732769, -0.00799690093845129, -0.041862111538648605, 0.026148689910769463, -0.02828417718410492, 0.04869622364640236, -0.0006873334641568363, -0.04601721093058586, -0.006007639225572348, -0.08104615658521652, 0.013279998674988747, 0.04161270707845688, -0.021522624418139458, 0.0055251107551157475, -0.007161536253988743, -0.024320589378476143, -0.026133963838219643, 0.0008864227565936744, 0.03954441100358963, -0.050225771963596344, 0.01222221925854683, 0.03920380771160126, 0.00791805237531662, -0.04486532881855965, 0.03159848600625992, -0.05669131875038147, -0.0328126959502697, -0.00507751852273941, 0.07290595024824142, 0.0024353652261197567, -0.0085061714053154, -0.05175389349460602, 0.010624885559082031, -0.04457366093993187, -0.05841369554400444, -0.05438567325472832, -0.0381191149353981, 0.004210691899061203, 0.04161887988448143, -0.004239342175424099, 0.0385577492415905, -0.012575731612741947, 0.014497087337076664, 0.01678282581269741, 0.0271763913333416, -0.04425777494907379, -0.030078236013650894, 0.06981972604990005, -0.0048407986760139465, -0.05654625967144966, -0.01937592588365078, -0.03092041052877903, 0.025185000151395798, -0.009015505202114582, 0.032180190086364746, -0.024999340996146202, 0.0005298058968037367, 0.054104071110486984, -0.004949965514242649, -0.03687005117535591, 0.004950394853949547, 0.00437488779425621, -0.04420541599392891, 0.00035850322456099093, -0.023808898404240608, 0.03196457400918007, -0.02843879535794258, -0.020088432356715202, -0.021608544513583183, 0.06790325790643692, 0.05702592059969902, 0.034712694585323334, 0.01677994430065155, -0.019629474729299545, 0.011999760754406452, 0.0036353839095681906, 0.005544804502278566, 0.05025240033864975, -0.05210060253739357, 0.015221058391034603, 0.001492310781031847, -0.002502329647541046, 0.03823800012469292, 0.06821125000715256, 0.03776811435818672, 0.0002583304012659937, -0.0002671472611837089, -0.0014285705983638763, -0.0475759319961071, -0.006180514581501484, 0.01990235410630703, -0.04790030047297478, -0.021272679790854454, -0.013836531899869442, 0.007434716448187828, -0.04176248237490654, -0.029663018882274628]}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ems_model <span class="op">=</span> SentenceTransformerEmbeddings(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    model_name<span class="op">=</span><span class="st">"HamzaFarhan/PDFSegs"</span>, model_kwargs<span class="op">=</span>{<span class="st">"device"</span>: <span class="st">"cuda:0"</span>}</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>index_folder <span class="op">=</span> <span class="st">"/media/hamza/data2/faiss_data/saved_indexes/"</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>index_name <span class="op">=</span> <span class="st">"test"</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> pdf_to_faiss_chain(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    ems_model<span class="op">=</span>ems_model,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    index_folder<span class="op">=</span>index_folder,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span>index_name,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"pdf_path"</span>],</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"docs"</span>],</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pdf <span class="op">=</span> <span class="st">"../../resumes_5/"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> chain(<span class="bu">dict</span>(pdf_path<span class="op">=</span>pdf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>res[<span class="st">"docs"</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

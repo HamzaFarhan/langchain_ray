@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Chains-based functions for NER.">
+
+<title>langchain_ray - Chains</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="langchain_ray - Chains">
+<meta property="og:description" content="Chains-based functions for NER.">
+<meta property="og:site-name" content="langchain_ray">
+<meta name="twitter:title" content="langchain_ray - Chains">
+<meta name="twitter:description" content="Chains-based functions for NER.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">langchain_ray</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ner/ner_utils.html">NER</a></li><li class="breadcrumb-item"><a href="../ner/ner_chains.html">Chains</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">langchain_ray</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">PDF</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pdf/pdf_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pdf/pdf_chains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">NER</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ner/ner_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ner/ner_chains.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Indexing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../indexing/indexing_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../indexing/indexing_chains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#add_ners_to_docs_chain" id="toc-add_ners_to_docs_chain" class="nav-link active" data-scroll-target="#add_ners_to_docs_chain">add_ners_to_docs_chain</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/HamzaFarhan/langchain_ray/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Chains</h1>
+</div>
+
+<div>
+  <div class="description">
+    Chains-based functions for NER.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<hr>
+<p><a href="https://github.com/HamzaFarhan/langchain_ray/blob/main/langchain_ray/ner/chains.py#L16" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="add_ners_to_docs_chain" class="level3">
+<h3 class="anchored" data-anchor-id="add_ners_to_docs_chain">add_ners_to_docs_chain</h3>
+<blockquote class="blockquote">
+<pre><code> add_ners_to_docs_chain (e_ner, j_ner, input_variables=['docs'],
+                         output_variables=['ner_docs'], verbose=False)</code></pre>
+</blockquote>
+<p>Chain that adds the NERs to a list of <code>Documents</code> usung <code>e_ner</code> and <code>j_ner</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> default_device()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>verbose <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cats_model <span class="op">=</span> SetFitModel.from_pretrained(<span class="st">"HamzaFarhan/PDFSegs"</span>).to(device)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>cats_folder <span class="op">=</span> <span class="st">"/media/hamza/data2/faiss_data/saved_cats"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(cats_folder):</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    shutil.rmtree(cats_folder)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>cats_folder <span class="op">=</span> <span class="st">"gs://gcsfuse-talentnet-dev/chains_ner/"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>chain1 <span class="op">=</span> pdf_to_docs_chain(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"path"</span>], output_variables<span class="op">=</span>[<span class="st">"docs"</span>], verbose<span class="op">=</span>verbose</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>chain2 <span class="op">=</span> add_cats_to_docs_chain(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    cats_model<span class="op">=</span>cats_model,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"docs"</span>],</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"cat_docs"</span>],</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span>verbose,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>chain3 <span class="op">=</span> add_ners_to_docs_chain(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    e_ner<span class="op">=</span>load_edu_model(device<span class="op">=</span>device),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    j_ner<span class="op">=</span>load_job_model(device<span class="op">=</span>device),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"cat_docs"</span>],</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"ner_docs"</span>],</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span>verbose,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>chain4 <span class="op">=</span> docs_to_json_chain(</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    json_folder<span class="op">=</span>cats_folder,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    indent<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"ner_docs"</span>],</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"json_docs"</span>],</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span>verbose,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> SequentialChain(</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    chains<span class="op">=</span>[chain1, chain2, chain3, chain4],</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    input_variables<span class="op">=</span>[<span class="st">"path"</span>],</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    output_variables<span class="op">=</span>[<span class="st">"json_docs"</span>],</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span>verbose,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pdf <span class="op">=</span> <span class="st">"../../resumes_5/"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> chain(<span class="bu">dict</span>(path<span class="op">=</span>pdf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+&gt; Entering new  chain...
+
+
+&gt; Entering new  chain...
+
+&gt; Finished chain.
+
+
+&gt; Entering new  chain...
+
+&gt; Finished chain.
+
+
+&gt; Entering new  chain...
+
+&gt; Finished chain.
+
+
+&gt; Entering new  chain...
+
+ℹ Downloading gs://gcsfuse-talentnet-dev/chains_ner/ to
+/tmp/chains_temp/6de444a725f140c8/chains_ner.
+
+
+ℹ Uploading /tmp/chains_temp/6de444a725f140c8/chains_ner to
+gs://gcsfuse-talentnet-dev/chains_ner/.
+
+
+&gt; Finished chain.
+
+&gt; Finished chain.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+CommandException: No URLs matched: gs://gcsfuse-talentnet-dev/chains_ner/*
+CommandException: 1 file/object could not be transferred.
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_18.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_5.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_13.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_17.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_9.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_7.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_1.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_10.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_10.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_16.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_11.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_37.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_29.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_6.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_10.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_6.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_1.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_31.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_5.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_8.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_19.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_2.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_3.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_15.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_15.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_28.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_25.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_4.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_19.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_25.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_13.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_23.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_5.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_4.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_16.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_24.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_9.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_27.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_21.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_11.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_21.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_21.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_6.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_24.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_30.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_24.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_14.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_39.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_28.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_23.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_18.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_22.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_34.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_38.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_10.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_25.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_29.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_9.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_18.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_27.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_4.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_12.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_26.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_11.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_32.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_17.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_21.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_17.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_12.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_7.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_3.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_22.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_22.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_4.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_12.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_6.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_11.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_28.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_4.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_8.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_30.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_36.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_14.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_7.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_33.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_9.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_19.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_8.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_3.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_35.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_2.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_27.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_3.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_40.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_9.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_26.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_26.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_8.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_32.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_33.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_5.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_20.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_24.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_12.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_18.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_16.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_17.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_13.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_7.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_15.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_14.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_5.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_6.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_27.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_1.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_13.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0d078ca0-b694-482e-a080-8bf9401a7d90_2.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_14.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_23.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_20.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_23.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_19.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_20.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_29.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_1.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_32.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_15.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_10.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_25.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_2.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_20.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_11.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_31.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_31.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_16.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0cf20170-8051-41ba-9060-1a82d43f4289_8.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_2.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_7.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_26.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_30.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0bedb223-262c-4388-9756-093dd7905428_1.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0caeea25-ce38-4f7d-b4ac-c5ec9b7c4d84_3.json [Content-Type=application/json]...
+Copying file:///tmp/chains_temp/6de444a725f140c8/chains_ner/0f479ee8-5fd9-4f55-b254-5e8feef08038_22.json [Content-Type=application/json]...
+/ [148/148 files][ 57.3 KiB/ 57.3 KiB] 100% Done                                
+Operation completed over 148 objects/57.3 KiB.                                   </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> res[<span class="st">"json_docs"</span>][<span class="dv">0</span>][<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(doc.metadata)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(doc.page_content)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'source': '../../resumes_5/0cf20170-8051-41ba-9060-1a82d43f4289.pdf', 'page': 0, 'start_index': 3474, 'category': 'Education', 'ner': {'institute': 'university of mumbai', 'date': '2008 - 2011'}}
+bachelor of commerce (b. com) - university of mumbai 2008 - 2011</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># temp_folder = Path('/tmp/chains_temp')</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># from datetime import datetime</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># def within_n_days(date, n=30):</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     return (datetime.now().date() - date).days &lt; n</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># today = datetime.today().date()</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># for f in temp_folder.iterdir():</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     m_date = datetime.fromtimestamp(f.stat().st_mtime).date()</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#     m_date = '2023-07-10'</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     m_date = datetime.strptime(m_date, '%Y-%m-%d').date()</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#     if within_n_days(m_date):</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(f)</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(m_date)</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#         print((today - m_date).days)</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#         print()</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># for f in temp_folder.iterdir():</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#     print(f.stat().st_mtime)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
